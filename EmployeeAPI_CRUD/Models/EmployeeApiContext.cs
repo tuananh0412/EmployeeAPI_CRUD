@@ -29,6 +29,8 @@ public partial class EmployeeApiContext : DbContext
             entity.Property(e => e.Gender)
                 .HasMaxLength(10)
                 .IsFixedLength();
+            entity.Property(e => e.DateCreated);
+            entity.Property(e => e.IsDeleted);
         });
 
         OnModelCreatingPartial(modelBuilder);

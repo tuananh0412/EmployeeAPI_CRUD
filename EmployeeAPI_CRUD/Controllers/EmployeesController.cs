@@ -20,7 +20,12 @@ namespace EmployeeAPI_CRUD.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEmployees()
         {
-            return Ok(await _context.Employees.ToListAsync());
+            var employees = await _context.Employees.ToListAsync();
+            var emps = from emp in employees
+                       where emp.IsDeleted == false
+                       select emp;
+
+            return Ok(emps);
         }
 
         // GET: api/Employees/5
@@ -48,7 +53,8 @@ namespace EmployeeAPI_CRUD.Controllers
                 FullName = employeeDTO.FullName,
                 DateOfBirth = employeeDTO.DateOfBirth,
                 Gender = employeeDTO.Gender,
-                Age = DateTime.Now.Year - employeeDTO.DateOfBirth.Year
+                Age = DateTime.Now.Year - employeeDTO.DateOfBirth.Year,
+                DateCreated = DateTime.Now,
             };
 
             if (_context.Employees.Any(e => e.FullName == employeeDTO.FullName) &&
@@ -94,7 +100,7 @@ namespace EmployeeAPI_CRUD.Controllers
                 return NotFound();
             }
 
-            _context.Employees.Remove(employee);
+            employee.IsDeleted = true;
             await _context.SaveChangesAsync();
 
             return Ok(employee);
